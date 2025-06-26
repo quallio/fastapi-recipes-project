@@ -1,0 +1,52 @@
+# Python byte-code cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments (local)
+.venv/
+venv/
+ENV/
+env/
+
+# Local environment variables
+.env
+
+# Editor / IDE settings
+.vscode/
+.idea/
+
+# Logs and temporary files
+*.log
+*.bak
+*.swp
+*.swo
+
+# Test / coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+.cache/
+.tox/
+.nox/
+coverage.xml
+
+# Poetry lock file (optional to ignore)
+poetry.lock
+
+# Docker override files
+docker-compose.override.yml
+
+# Local SQLite / test databases
+*.sqlite3
+*.db
+
+# Data and script cache
+data/
+scripts/__pycache__/
+app/**/__pycache__/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
