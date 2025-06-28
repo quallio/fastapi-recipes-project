@@ -77,7 +77,7 @@ def seed_data() -> None:
             ]
         )
         db.commit()
-        print("✅ Seed data inserted successfully")
+        print("Seed data inserted successfully")
 
     except Exception as e:
         db.rollback()
