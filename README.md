@@ -40,5 +40,26 @@ To stop and remove all containers, networks, and volumes:
 ```bash
 # Stop the containers
 docker-compose down
+```
 
+
+### 🛠️ Initialize the Database
+
+To create the tables inside the PostgreSQL database:
+
+```bash
+docker-compose exec api python -m scripts.init_db
+```
+
+💡 Make sure the recipes table does not already exist, or it will be ignored if already created.
+
+
+
+
+### 🌱 Seed the Database
+
+To insert initial data into the database for testing:
+
+```bash
+docker-compose exec api python -m scripts.seed_data
 ```
