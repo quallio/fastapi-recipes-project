@@ -1,0 +1,29 @@
+erDiagram
+    authors ||--o{ recipes : writes
+    recipes ||--o{ recipe_ingredients : includes
+    ingredients ||--o{ recipe_ingredients : used_in
+
+    authors {
+        int id PK
+        string name
+        string email
+    }
+
+    recipes {
+        int id PK
+        string title
+        string description
+        int author_id FK
+    }
+
+    ingredients {
+        int id PK
+        string name
+    }
+
+    recipe_ingredients {
+        int recipe_id FK
+        int ingredient_id FK
+        float quantity
+        string unit
+    }

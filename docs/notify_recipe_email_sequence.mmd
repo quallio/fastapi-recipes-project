@@ -1,0 +1,10 @@
+sequenceDiagram
+    participant User
+    participant API
+    participant Mailgun
+
+    User ->> API: POST /recipes
+    Note right of API: Validate and persist recipe
+    API ->> Mailgun: Send email notification
+    Mailgun -->> API: 202 Accepted
+    API -->> User: 201 Created (Recipe stored, Email sent)
