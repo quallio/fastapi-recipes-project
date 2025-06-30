@@ -1,6 +1,35 @@
-# FastAPI Recipes Project
+# 🍲 FastAPI Recipes API
 
-Backend API for managing recipes using FastAPI, PostgreSQL, Docker, and Poetry.
+Production-ready REST API to manage **authors**, **recipes** and **ingredients**  
+(Built with FastAPI + PostgreSQL, packaged with Docker, following a clean layered architecture).
+
+---
+
+## ✨ Key Features
+
+| Layer | Responsibility | Folders |
+|-------|----------------|---------|
+| **Presentation** | HTTP routes & Pydantic DTOs | `app/presentation` |
+| **Application**  | Business services & domain rules | `app/application` |
+| **Domain**       | SQLAlchemy ORM entities | `app/domain` |
+| **Persistence**  | Repositories / DB access | `app/persistence` |
+
+* Full CRUD for **Author**, **Recipe**, **Ingredient**  
+* Business checks (unique e-mail, existing ingredients, etc.)  
+* `/health` and `/version` public endpoints  
+* Docker Compose: one command brings up API + PostgreSQL  
+* Init & seed scripts for quick local testing
+
+---
+
+## 🏗 Tech Stack
+
+* **Python 3.10** | **FastAPI 0.110** | **SQLAlchemy 2.x**  
+* **PostgreSQL 16** (official Docker image)  
+* **Poetry** for dependency management  
+* **Docker & Docker Compose**
+
+---
 
 ## 🚀 Getting Started
 
@@ -33,15 +62,6 @@ You can test the available endpoints using Swagger UI:
 
 - Open http://localhost:8000/docs in your browser.
 
-### 🛑 Stop the Containers
-
-To stop and remove all containers, networks, and volumes:
-
-```bash
-# Stop the containers
-docker-compose down
-```
-
 
 ### 🛠️ Initialize the Database
 
@@ -63,3 +83,23 @@ To insert initial data into the database for testing:
 ```bash
 docker-compose exec api python -m scripts.seed_data
 ```
+
+
+### 🔧 Environment Variables
+
+
+| Variable       | Purpose                            | Default                                          |
+| -------------- | ---------------------------------- | ------------------------------------------------ |
+| `DATABASE_URL` | PostgreSQL connection              | `postgresql://postgres:postgres@db:5432/recipes` |
+
+
+### 🛑 Stop the Containers
+
+To stop and remove all containers, networks, and volumes:
+
+```bash
+# Stop the containers
+docker-compose down
+```
+
+
