@@ -1,8 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 # ─────────────────────── BASE ─────────────────────────
 class IngredientBase(BaseModel):
-    name: str
+    name: str = Field(..., example="Lemon Juice")
 
 
 # ─────────────────────── CREATE ─────────────────────────

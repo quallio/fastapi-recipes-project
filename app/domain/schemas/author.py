@@ -1,11 +1,11 @@
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 
 
 # ─────────────────────────────── BASE ───────────────────────────────
 class AuthorBase(BaseModel):
-    name: str
-    email: EmailStr
+    name: str = Field(..., example="Pepe Argento")
+    email: EmailStr = Field(..., example="pepe_argg@mail.com")
 
 
 # ─────────────────────────────── CREATE ─────────────────────────────
@@ -15,8 +15,8 @@ class AuthorCreate(AuthorBase):
 
 # ─────────────────────────────── UPDATE ─────────────────────────────
 class AuthorUpdate(BaseModel):
-    name: Optional[str] = None
-    email: Optional[EmailStr] = None
+    name: Optional[str] = Field(None, example="Franco Colap")
+    email: Optional[EmailStr] = Field(None, example="franco_c@mail.com")
 
 
 # ─────────────────────────────── RESPONSE ───────────────────────────
