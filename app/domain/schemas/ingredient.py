@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 
-
 class IngredientBase(BaseModel):
     name: str
 
@@ -14,3 +13,5 @@ class IngredientRead(IngredientBase):
 
     class Config:
         orm_mode = True
+
+# working on...
