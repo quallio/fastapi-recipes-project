@@ -1,17 +1,18 @@
 from pydantic import BaseModel
 
+# ─────────────────────── BASE ─────────────────────────
 class IngredientBase(BaseModel):
     name: str
 
 
+# ─────────────────────── CREATE ─────────────────────────
 class IngredientCreate(IngredientBase):
     pass
 
 
-class IngredientRead(IngredientBase):
+# ─────────────────────── RESPONSE ─────────────────────────
+class IngredientResponse(IngredientBase):
     id: int
 
     class Config:
         orm_mode = True
-
-# working on...

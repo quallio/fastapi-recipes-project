@@ -5,11 +5,10 @@ This module contains all low-level database operations related to Recipe,
 encapsulating direct SQLAlchemy usage from the rest of the application.
 """
 
-from typing import List, Optional, Union
+from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.domain.models.recipe import Recipe
-from app.domain.models.ingredient import Ingredient
 from app.domain.models.recipe_ingredient import RecipeIngredient
 
 

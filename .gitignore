@@ -32,9 +32,6 @@ htmlcov/
 .nox/
 coverage.xml
 
-# Poetry lock file (optional to ignore)
-poetry.lock
-
 # Docker override files
 docker-compose.override.yml
 
