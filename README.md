@@ -103,3 +103,36 @@ docker-compose down
 ```
 
 
+
+## Business Transformation
+
+### Requirement
+API consumers need each recipe in a single JSON payload that already includes:
+* Author details (name, email)
+* Full list of ingredients with quantity + unit
+
+### Transformation
+The service layer (see `app/application/services/recipe_service.py`)
+takes normalized rows (`recipes`, `recipe_ingredients`, `ingredients`,
+`authors`) and builds a denormalized `RecipeResponse` model:
+
+```json
+{
+  "id": 1,
+  "title": "Pancakes",
+  "description": "...",
+  "author": {
+    "id": 1,
+    "name": "Juan Pérez",
+    "email": "juan@example.com"
+  },
+  "ingredients": [
+    {"ingredient_id": 2, "quantity": 2,   "unit": "pcs"},
+    {"ingredient_id": 3, "quantity": 250, "unit": "ml"}
+  ]
+}
+```
+
+This lets front-end or mobile clients render a recipe without making additional calls.
+
+
