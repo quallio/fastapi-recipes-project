@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import List, Optional, Union
 
 from app.domain.schemas.author import AuthorResponse
-
 
 # ─────────────────────────────── BASE ───────────────────────────────
 class RecipeBase(BaseModel):
@@ -15,9 +14,10 @@ class IngredientInRecipe(BaseModel):
     ingredient_id: int = Field(..., example=1)
     quantity: Union[int, float] = Field(..., example=200)
     unit: str = Field(..., example="grams")
+    ingredient_name: Optional[str] = Field(None, example="Sugar")
 
-    class Config:
-        orm_mode = True
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 # ─────────────────────────────── CREATE ─────────────────────────────
@@ -51,5 +51,4 @@ class RecipeResponse(RecipeBase):
     author: AuthorResponse
     ingredients: List[IngredientInRecipe]
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

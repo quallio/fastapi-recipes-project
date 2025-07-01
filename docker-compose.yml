@@ -1,7 +1,7 @@
 version: "3.9"
 
 services:
-  # PostgreSQL service
+  # ───────────────────────── DATABASE ─────────────────────────
   db:
     image: postgres:16
     environment:
@@ -11,19 +11,35 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"  # Optional if you want to access the DB from your host
+      - "5432:5432"
 
-  # FastAPI application service
+  # ───────────────────────── BACKEND ──────────────────────────
   api:
-    build: .  # Uses the Dockerfile in the current directory
+    build: .                # Uses the Dockerfile in the root directory
     depends_on:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg2://recipes:recipes@db:5432/recipes
     volumes:
-      - .:/app  # Mounts current directory into the container
+      - .:/app              # Mounts the project directory for live reload
     ports:
-      - "8000:8000"  # Exposes the FastAPI app on localhost:8000
+      - "8000:8000"
+
+  # ───────────────────────── FRONTEND ─────────────────────────
+  frontend:
+    build: ./frontend
+    command: sh -c "npm install && npm run dev -- --host"
+    volumes:
+      - ./frontend:/app          # your code
+      - /app/node_modules        # anonymous volume keeps deps
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://api:8000  # ← if you use an env var
 
 volumes:
-  db_data:  # Persistent volume for PostgreSQL data
+  db_data:                # Persistent volume for PostgreSQL
+
+
+
+

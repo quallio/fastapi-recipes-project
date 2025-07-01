@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 # ─────────────────────── BASE ─────────────────────────
 class IngredientBase(BaseModel):
@@ -14,5 +14,4 @@ class IngredientCreate(IngredientBase):
 class IngredientResponse(IngredientBase):
     id: int
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

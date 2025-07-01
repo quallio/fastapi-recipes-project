@@ -6,12 +6,16 @@ including ingredient validation and delegation to the repository layer.
 """
 
 from typing import List, Optional
-
 from sqlalchemy.orm import Session
 
 from app.domain.models.ingredient import Ingredient
-from app.persistence.repositories import recipe_repository, author_repository
+from app.persistence.repositories import (
+    recipe_repository,
+    author_repository,
+    ingredient_repository,
+)
 
+from app.domain.schemas.recipe import RecipeResponse, IngredientInRecipe
 from app.application.exceptions.recipe_exceptions import RecipeNotFoundError
 from app.application.exceptions.ingredient_exceptions import IngredientNotFoundError
 from app.application.exceptions.author_exceptions import AuthorNotFoundError
@@ -32,6 +36,12 @@ def _validate_ingredients_exist(db: Session, ingredient_ids: List[int]) -> None:
     for ing_id in ingredient_ids:
         if ing_id not in found_ids:
             raise IngredientNotFoundError(ing_id)
+
+
+def _build_id_to_name_map(db: Session) -> dict[int, str]:
+    """Helper: returns a mapping from ingredient_id to name."""
+    ingredients = ingredient_repository.list_ingredients(db, skip=0, limit=10000)
+    return {ing.id: ing.name for ing in ingredients}
 
 
 # ───────────────────────── CREATE ──────────────────────────
@@ -71,11 +81,53 @@ def get_recipe_service(db: Session, recipe_id: int):
     recipe = recipe_repository.get_recipe_by_id(db, recipe_id)
     if recipe is None:
         raise RecipeNotFoundError(recipe_id)
-    return recipe
+
+    id_to_name = _build_id_to_name_map(db)
+    enriched_ingredients = [
+        IngredientInRecipe(
+            ingredient_id=ri.ingredient_id,
+            quantity=ri.quantity,
+            unit=ri.unit,
+            ingredient_name=id_to_name.get(ri.ingredient_id),
+        )
+        for ri in recipe.ingredients
+    ]
+
+    return RecipeResponse(
+        id=recipe.id,
+        title=recipe.title,
+        description=recipe.description,
+        author=recipe.author,
+        ingredients=enriched_ingredients,
+    )
 
 
 def list_recipes_service(db: Session, *, skip: int = 0, limit: int = 100):
-    return recipe_repository.list_recipes(db, skip=skip, limit=limit)
+    recipes = recipe_repository.list_recipes(db, skip=skip, limit=limit)
+    id_to_name = _build_id_to_name_map(db)
+
+    response: List[RecipeResponse] = []
+    for r in recipes:
+        enriched_ingredients = [
+            IngredientInRecipe(
+                ingredient_id=ri.ingredient_id,
+                quantity=ri.quantity,
+                unit=ri.unit,
+                ingredient_name=id_to_name.get(ri.ingredient_id),
+            )
+            for ri in r.ingredients
+        ]
+
+        response.append(
+            RecipeResponse(
+                id=r.id,
+                title=r.title,
+                description=r.description,
+                author=r.author,
+                ingredients=enriched_ingredients,
+            )
+        )
+    return response
 
 
 # ───────────────────────── UPDATE ──────────────────────────
