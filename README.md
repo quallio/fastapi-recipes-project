@@ -1,120 +1,131 @@
-# 🍲 FastAPI Recipes API
+# 🍲 FastAPI Recipes App (Backend + Frontend)
 
-Production-ready REST API to manage **authors**, **recipes** and **ingredients**  
-(Built with FastAPI + PostgreSQL, packaged with Docker, following a clean layered architecture).
+Production-ready fullstack app to manage **recipes**, **ingredients**, and **authors**, built with:
 
----
-
-## ✨ Key Features
-
-| Layer | Responsibility | Folders |
-|-------|----------------|---------|
-| **Presentation** | HTTP routes & Pydantic DTOs | `app/presentation` |
-| **Application**  | Business services & domain rules | `app/application` |
-| **Domain**       | SQLAlchemy ORM entities | `app/domain` |
-| **Persistence**  | Repositories / DB access | `app/persistence` |
-
-* Full CRUD for **Author**, **Recipe**, **Ingredient**  
-* Business checks (unique e-mail, existing ingredients, etc.)  
-* `/health` and `/version` public endpoints  
-* Docker Compose: one command brings up API + PostgreSQL  
-* Init & seed scripts for quick local testing
+- 🐍 **FastAPI** backend + **PostgreSQL**
+- ⚛️ **React** frontend + Vite
+- 🐳 **Docker Compose** for orchestration
 
 ---
 
-## 🏗 Tech Stack
+## ✨ Features
 
-* **Python 3.10** | **FastAPI 0.110** | **SQLAlchemy 2.x**  
-* **PostgreSQL 16** (official Docker image)  
-* **Poetry** for dependency management  
-* **Docker & Docker Compose**
+### ✅ Backend
+
+| Layer            | Responsibility                      | Folder           |
+|------------------|--------------------------------------|------------------|
+| Presentation     | HTTP routes & Pydantic DTOs         | `app/presentation` |
+| Application      | Business logic & validation rules   | `app/application`  |
+| Domain           | SQLAlchemy ORM models               | `app/domain`       |
+| Persistence      | DB access / repositories            | `app/persistence`  |
+
+- Full CRUD: Authors, Recipes, Ingredients
+- Validation: unique emails, ingredient existence, etc.
+- Data transformation: returns nested authors and ingredient names
+- Swagger docs at `/docs`
+- Health check at `/health`
+- Includes DB init and seed scripts
+
+### 🌐 Frontend (React)
+
+- Built with React 18 + Vite 5
+- Allows viewing and creating recipes
+- Recipe form supports multiple ingredients
+- Form-level validation
+- Basic mobile responsiveness
+- **Note**: API URL is currently hardcoded to `http://localhost:8000`  
+  (see `frontend/src/api/recipeApi.js`)
+
+---
+
+## 📦 Tech Stack
+
+- **Python 3.10**, FastAPI 0.110, SQLAlchemy 2.x
+- PostgreSQL 16 (Dockerized)
+- React, Vite, Axios
+- Poetry for dependency management
+- Docker + Docker Compose
 
 ---
 
 ## 🚀 Getting Started
 
-These instructions will get your development environment up and running.
-
-### 📦 Prerequisites
-
-- [Docker](https://www.docker.com/)
-- [Docker Compose](https://docs.docker.com/compose/)
-
-### 🛠️ Build and Run the Project
+You can run the entire app (backend + frontend + db) using:
 
 ```bash
-# Build the Docker image
-docker-compose build
-
-# Run the containers in detached mode
-docker-compose up -d
-
+docker-compose up --build
 ```
 
 This will start:
 
-- A FastAPI app running on http://localhost:8000
-- A PostgreSQL database on port 5432
+| Service     | URL                            |
+|-------------|---------------------------------|
+| **Backend** | http://localhost:8000           |
+| **Frontend**| http://localhost:5173           |
+| **Docs**    | http://localhost:8000/docs      |
+| **Database**| PostgreSQL on `localhost:5432`  |
 
-### 🧪 Test API Endpoints
+---
 
-You can test the available endpoints using Swagger UI:
+## 🛠 Database Setup
 
-- Open http://localhost:8000/docs in your browser.
-
-
-### 🛠️ Initialize the Database
-
-To create the tables inside the PostgreSQL database:
+### Initialize tables
 
 ```bash
 docker-compose exec api python -m scripts.init_db
 ```
 
-💡 Make sure the recipes table does not already exist, or it will be ignored if already created.
-
-
-
-
-### 🌱 Seed the Database
-
-To insert initial data into the database for testing:
+### Seed sample data
 
 ```bash
 docker-compose exec api python -m scripts.seed_data
 ```
 
+---
 
-### 🔧 Environment Variables
+## 📁 Project Structure
 
-
-| Variable       | Purpose                            | Default                                          |
-| -------------- | ---------------------------------- | ------------------------------------------------ |
-| `DATABASE_URL` | PostgreSQL connection              | `postgresql://postgres:postgres@db:5432/recipes` |
-
-
-### 🛑 Stop the Containers
-
-To stop and remove all containers, networks, and volumes:
-
-```bash
-# Stop the containers
-docker-compose down
+```
+.
+├── app/                 # FastAPI backend (clean architecture)
+│   ├─ presentation/     # HTTP routes & Pydantic DTOs
+│   ├─ application/      # Business services & domain rules
+│   ├─ domain/           # ORM entities
+│   └─ persistence/      # Repositories / DB access
+├── frontend/            # React frontend (Vite)
+├── scripts/             # DB init & seed
+├── docs/                # Architecture diagrams (Mermaid .mmd files)
+├── docker-compose.yml   # Orchestration
+└── README.md
 ```
 
+Inside `frontend/`:
 
+```
+src/
+ ├─ api/
+ │   └─ recipeApi.js         # Axios wrappers
+ ├─ components/
+ │   ├─ RecipeList/
+ │   │   └─ RecipeList.jsx
+ │   └─ RecipeForm/
+ │       ├─ RecipeForm.jsx
+ │       └─ IngredientField.jsx
+ ├─ App.jsx
+ ├─ main.jsx
+ └─ index.css
+```
 
-## Business Transformation
+---
 
-### Requirement
-API consumers need each recipe in a single JSON payload that already includes:
-* Author details (name, email)
-* Full list of ingredients with quantity + unit
+## 🔁 Business Transformation
 
-### Transformation
-The service layer (see `app/application/services/recipe_service.py`)
-takes normalized rows (`recipes`, `recipe_ingredients`, `ingredients`,
-`authors`) and builds a denormalized `RecipeResponse` model:
+The backend returns each recipe in a denormalized format that includes:
+
+- Author info
+- Ingredient name + quantity + unit
+
+Example:
 
 ```json
 {
@@ -127,12 +138,39 @@ takes normalized rows (`recipes`, `recipe_ingredients`, `ingredients`,
     "email": "juan@example.com"
   },
   "ingredients": [
-    {"ingredient_id": 2, "quantity": 2,   "unit": "pcs"},
-    {"ingredient_id": 3, "quantity": 250, "unit": "ml"}
+    { "ingredient_id": 2, "ingredient_name": "Flour", "quantity": 200, "unit": "g" },
+    { "ingredient_id": 3, "ingredient_name": "Milk",  "quantity": 250, "unit": "ml" }
   ]
 }
 ```
 
-This lets front-end or mobile clients render a recipe without making additional calls.
+This lets the frontend render recipes **without extra API calls**.
 
+---
 
+## 🔧 Environment Notes
+
+The API URL used by the frontend is currently hardcoded to `http://localhost:8000`.  
+Support for `.env` will be added in a future update.
+
+---
+
+## ✅ Future Improvements
+
+- `.env` support for frontend API base URL
+- Edit/Delete support for recipes
+- Recipe images or categories
+- Pagination / filtering in the frontend
+- Improved validation UX (Yup/Zod)
+- **Unit tests** (Pytest) & **integration tests**
+- Pre‑commit quality tools (e.g. **Flake8**, Black)
+
+---
+
+> **Personal Note**  
+> Building this project was a great learning exercise; it kept me busy and exposed me to new concepts.  
+> In hindsight I should have leveraged Git branches and pull‑request workflows even when working solo, keeping `main` always deployable and merging feature branches incrementally — a practice I do follow in professional settings.
+
+## 📝 License
+
+MIT
