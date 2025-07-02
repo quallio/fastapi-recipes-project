@@ -48,6 +48,15 @@ Production-ready fullstack app to manage **recipes**, **ingredients**, and **aut
 
 ---
 
+## 🐳 Prerequisites
+
+Before starting, ensure you have the following installed:
+
+- [Docker](https://www.docker.com/products/docker-desktop)
+- [Docker Compose](https://docs.docker.com/compose/install/)
+
+---
+
 ## 🚀 Getting Started
 
 You can run the entire app (backend + frontend + db) using:
