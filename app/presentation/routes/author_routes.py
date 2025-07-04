@@ -4,13 +4,13 @@ HTTP routes for the Author entity.
 Exposes RESTful endpoints to create, read, update and delete authors.
 """
 
-from typing import List
+from typing import List, Union
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.application.services.author_service import (
-    create_author_service,
+    create_authors_service,
     get_author_service,
     list_authors_service,
     update_author_service,
@@ -28,17 +28,33 @@ router = APIRouter(prefix="/authors", tags=["Authors"])
 # ─────────────────────────────── CREATE ──────────────────────────────
 @router.post(
     "/",
-    response_model=AuthorResponse,
+    response_model=List[AuthorResponse], 
     status_code=status.HTTP_201_CREATED,
-    summary="Create a new author",
+    summary="Create one or many authors",
 )
-def create_author(author_in: AuthorCreate, db: Session = Depends(get_db)):
+def create_author(
+    author_in: Union[AuthorCreate, List[AuthorCreate]],
+    db: Session = Depends(get_db)
+):
     """
     Create a new author with a unique email.
     Returns 409 Conflict if that email already exists.
+    Accepts a single AuthorCreate or a list of AuthorCreate objects.
+    Returns a list of created authors.
     """
+    # Reject empty list explicitly
+    if isinstance(author_in, list) and not author_in:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Payload list cannot be empty.",
+        )
+    
+    # This normalize the payload income. Author_items is always a list.... with one or several elements. The create_author_service fn is waiting for a list.
+    # Other option would be configure everything to send in the payload always a LIST... for one or several Authors.. but it is an option.
+    author_items = author_in if isinstance(author_in, list) else [author_in]
+
     try:
-        return create_author_service(db, name=author_in.name, email=author_in.email)
+        return create_authors_service(db, author_items)
     except AuthorAlreadyExistsError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
 
