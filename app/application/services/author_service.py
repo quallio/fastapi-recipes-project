@@ -10,22 +10,27 @@ from sqlalchemy.orm import Session
 
 from app.domain.models.author import Author
 from app.persistence.repositories import author_repository
+from app.domain.schemas.author import AuthorCreate
 from app.application.exceptions.author_exceptions import AuthorAlreadyExistsError, AuthorNotFoundError
 
 
-def create_author_service(db: Session, *, name: str, email: str) -> Author:
-    """
-    Business logic to create a new author.
-    Prevents duplicate emails.
 
-    Raises:
-        AuthorAlreadyExistsError: If an author with the same email already exists.
+def create_authors_service(db: Session, author_items: List[AuthorCreate]) -> List[Author]:
     """
-    existing = author_repository.get_author_by_email(db, email)
-    if existing:
-        raise AuthorAlreadyExistsError(email=email)
+    Create one or many authors.
 
-    return author_repository.create_author(db, name=name, email=email)
+    """
+    # 1) Verify if there are duplicated emails in the income list of authors
+    emails = [a.email for a in author_items]
+    if len(set(emails)) != len(emails):
+        raise AuthorAlreadyExistsError(email="Duplicated email in payload")
+
+    # 2) Verify if there are duplicated emails in DB
+    for email in emails:
+        if author_repository.get_author_by_email(db, email):
+            raise AuthorAlreadyExistsError(email=email)
+
+    return author_repository.create_authors(db, author_items)
 
 
 def get_author_service(db: Session, author_id: int) -> Author:

@@ -9,8 +9,9 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 
 from app.domain.models.author import Author
+from app.domain.schemas.author import AuthorCreate
 
-
+# POST Authors endpoint is not using this fn at the moment.
 def create_author(db: Session, *, name: str, email: str) -> Author:
     """
     Insert a new Author into the database.
@@ -28,6 +29,35 @@ def create_author(db: Session, *, name: str, email: str) -> Author:
     db.commit()
     db.refresh(author)
     return author
+
+
+# POST Authors endpoint is using this fn.
+def create_authors(
+    db: Session,
+    author_items: List[AuthorCreate],
+) -> List[Author]:
+    """
+    Insert multiple Authors with a single transaction.
+
+    Args:
+        db: Database session.
+        authors_data: List of AuthorsCreate, each containing .name and .email.
+
+    Returns:
+        List of newly created Author instances.
+    """
+    authors_created: List[Author] = []
+
+    for data in author_items:
+        author = Author(name=data.name, email=data.email)
+        db.add(author)
+        authors_created.append(author)
+
+    db.commit()                 # one commit for all the authors created
+    for author in authors_created:
+        db.refresh(author)
+
+    return authors_created
 
 
 def get_author_by_id(db: Session, author_id: int) -> Optional[Author]:
