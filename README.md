@@ -176,7 +176,33 @@ Support for `.env` will be added in a future update.
 
 ---
 
-> **Personal Note**  
+### 🧹 Pre-commit Hooks
+
+Pre-commit hooks are configured to maintain code quality and consistency across the project.
+
+They include:
+
+- **Ruff** — formatting and linting (`--fix`)
+- **Mypy** — static type checking
+- **Pylint** — linting with a minimum score threshold
+
+Once installed, they run automatically on every `git commit`.  
+You can also run them manually on all files with:
+
+```bash
+poetry run pre-commit run --all-files
+```
+
+> ℹ️ Make sure you’ve installed pre-commit with:
+>
+> ```bash
+> poetry add --dev pre-commit
+> poetry run pre-commit install
+> ```
+
+
+
+> ### Personal Note 
 > Building this project was a great learning exercise; it kept me busy and exposed me to new concepts.  
 > In hindsight I should have leveraged Git branches and pull‑request workflows even when working solo, keeping `main` always deployable and merging feature branches incrementally — a practice I do follow in professional settings.
 
