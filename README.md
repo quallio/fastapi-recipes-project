@@ -76,6 +76,23 @@ This will start:
 
 ---
 
+
+## 🧪 Running Tests
+
+### To run the unit tests inside the Docker container:
+
+```bash
+docker-compose run --rm api pytest -v -s
+```
+
+This command will:
+
+- Create a temporary container based on the api service
+- Run all tests using pytest
+- Show detailed output (-v) and any print() statements (-s)
+- Automatically remove the container after completion (--rm)
+
+
 ## 🛠 Database Setup
 
 ### Initialize tables
@@ -209,3 +226,6 @@ poetry run pre-commit run --all-files
 ## 📝 License
 
 MIT
+
+
+
