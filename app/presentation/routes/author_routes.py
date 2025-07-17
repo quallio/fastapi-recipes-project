@@ -10,10 +10,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.application.services.author_service import AuthorService
 from app.application.services.author_service_provider import get_author_service
-from app.application.exceptions.author_exceptions import (
-    AuthorAlreadyExistsError,
-    AuthorNotFoundError,
-)
 from app.domain.schemas.author import AuthorCreate, AuthorResponse, AuthorUpdate
 
 router = APIRouter(prefix="/authors", tags=["Authors"])
@@ -46,11 +42,7 @@ def create_author(
     
     author_items = author_in if isinstance(author_in, list) else [author_in]
 
-    try:
-        return service.create_authors(author_items)
-    except AuthorAlreadyExistsError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-
+    return service.create_authors(author_items)
 
 # ─────────────────────────────── READ ONE ────────────────────────────
 @router.get(
@@ -67,11 +59,7 @@ def read_author(
     Retrieve a single author by primary key.
     Returns 404 if the author does not exist.
     """
-    try:
-        return service.get_author(author_id)
-    except AuthorNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
+    return service.get_author(author_id)
 
 # ─────────────────────────────── READ LIST ───────────────────────────
 @router.get(
@@ -104,11 +92,7 @@ def delete_author(
     """
     Delete an author by ID. Returns 204 No Content on success.
     """
-    try:
-        service.delete_author(author_id)
-    except AuthorNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
+    service.delete_author(author_id)
 
 # ─────────────────────────────── UPDATE ──────────────────────────────
 @router.put(
@@ -122,13 +106,9 @@ def update_author(
     author_in: AuthorUpdate,
     service: AuthorService = Depends(get_author_service),
 ):
-    try:
-        return service.update_author(
-            author_id,
-            name=author_in.name,
-            email=author_in.email,
-        )
-    except AuthorAlreadyExistsError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-    except AuthorNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    return service.update_author(
+        author_id,
+        name=author_in.name,
+        email=author_in.email,
+    )

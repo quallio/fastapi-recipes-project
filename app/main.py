@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.presentation.exception_handlers import register_exception_handlers
 from app.presentation.routes import system
 from app.presentation.routes import author_routes as author
 from app.presentation.routes import recipe_routes as recipe
@@ -8,6 +9,8 @@ from app.presentation.routes import ingredients_routes as ingredient
 
 # Create FastAPI app
 app = FastAPI(title="Recipes API", version="0.1.0")
+
+register_exception_handlers(app)
 
 # Add CORS middleware for local development
 origins = [

@@ -6,7 +6,7 @@ Exposes REST-style endpoints to create, read, update and delete recipes.
 
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, Query, status
 from sqlalchemy.orm import Session
 
 from app.persistence.db import get_db
@@ -25,9 +25,6 @@ from app.application.services.recipe_service import (
     delete_recipe_service,
 )
 
-from app.application.exceptions.author_exceptions import AuthorNotFoundError
-from app.application.exceptions.recipe_exceptions import RecipeNotFoundError
-from app.application.exceptions.ingredient_exceptions import IngredientNotFoundError
 
 router = APIRouter(prefix="/recipes", tags=["Recipes"])
 
@@ -47,17 +44,14 @@ def create_recipe(
 
     * **404** – Author or any ingredient does not exist
     """
-    try:
-        return create_recipe_service(
-            db,
-            title=recipe_in.title,
-            description=recipe_in.description,
-            author_id=recipe_in.author_id,
-            ingredients_data=[i.model_dump() for i in recipe_in.ingredients],
-        )
-    except (AuthorNotFoundError, IngredientNotFoundError) as exc:
-        # Resource not found → 404
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+    return create_recipe_service(
+        db,
+        title=recipe_in.title,
+        description=recipe_in.description,
+        author_id=recipe_in.author_id,
+        ingredients_data=[i.model_dump() for i in recipe_in.ingredients],
+    )
 
 
 # ─────────────────────────────── LIST ────────────────────────────────
@@ -89,11 +83,7 @@ def get_recipe(recipe_id: int, db: Session = Depends(get_db)):
  
     * **404** – Recipe not found
     """
-    try:
-        return get_recipe_service(db, recipe_id)
-    except RecipeNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
+    return get_recipe_service(db, recipe_id)
 
 # ─────────────────────────────── UPDATE ──────────────────────────────
 @router.put(
@@ -112,21 +102,17 @@ def update_recipe(
 
     * **404** – Recipe, author or ingredient not found
     """
-    try:
-        return update_recipe_service(
-            db,
-            recipe_id,
-            title=recipe_in.title,
-            description=recipe_in.description,
-            ingredients_data=(
-                [i.model_dump() for i in recipe_in.ingredients]
-                if recipe_in.ingredients is not None
-                else None
-            ),
-        )
-    except (RecipeNotFoundError, AuthorNotFoundError, IngredientNotFoundError) as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-
+    return update_recipe_service(
+        db,
+        recipe_id,
+        title=recipe_in.title,
+        description=recipe_in.description,
+        ingredients_data=(
+            [i.model_dump() for i in recipe_in.ingredients]
+            if recipe_in.ingredients is not None
+            else None
+        ),
+    )
 
 # ─────────────────────────────── DELETE ──────────────────────────────
 @router.delete(
@@ -140,7 +126,5 @@ def delete_recipe(recipe_id: int, db: Session = Depends(get_db)):
 
     * **404** – Recipe not found
     """
-    try:
-        delete_recipe_service(db, recipe_id)
-    except RecipeNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    delete_recipe_service(db, recipe_id)
+    return
