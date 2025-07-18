@@ -5,18 +5,12 @@ Exposes REST-style endpoints to create, read, and delete ingredients.
 """
 
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
 
-from app.persistence.db import get_db
+from app.application.services.ingredient_service import IngredientService
+from app.application.services.ingredient_service_provider import get_ingredient_service
 from app.domain.schemas.ingredient import (
     IngredientCreate,
     IngredientResponse,
-)
-from app.application.services.ingredient_service import (
-    create_ingredient_service,
-    get_ingredient_service,
-    list_ingredients_service,
-    delete_ingredient_service,
 )
 
 router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
@@ -30,9 +24,9 @@ router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
 )
 def create_ingredient(
     ingredient_in: IngredientCreate,
-    db: Session = Depends(get_db),
+    service: IngredientService = Depends(get_ingredient_service),
 ):
-    return create_ingredient_service(db, name=ingredient_in.name)
+    return service.create_ingredient(name=ingredient_in.name)
 
 # ───────────── LIST ──────────────
 @router.get(
@@ -43,10 +37,9 @@ def create_ingredient(
 def list_ingredients(
     skip: int = 0,
     limit: int = 100,
-    db: Session = Depends(get_db),
+    service: IngredientService = Depends(get_ingredient_service),
 ):
-    return list_ingredients_service(db, skip=skip, limit=limit)
-
+    return service.list_ingredients(skip=skip, limit=limit)
 
 # ───────────── READ ──────────────
 @router.get(
@@ -56,10 +49,9 @@ def list_ingredients(
 )
 def get_ingredient(
     ingredient_id: int,
-    db: Session = Depends(get_db),
+    service: IngredientService = Depends(get_ingredient_service),
 ):
-    return get_ingredient_service(db, ingredient_id)
-
+    return service.get_ingredient(ingredient_id)
 
 # ───────────── DELETE ────────────
 @router.delete(
@@ -69,7 +61,6 @@ def get_ingredient(
 )
 def delete_ingredient(
     ingredient_id: int,
-    db: Session = Depends(get_db),
+    service: IngredientService = Depends(get_ingredient_service),
 ):
-    delete_ingredient_service(db, ingredient_id)
-    return
+    return service.delete_ingredient(ingredient_id)
