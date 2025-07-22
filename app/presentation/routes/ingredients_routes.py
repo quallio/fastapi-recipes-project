@@ -4,7 +4,7 @@ HTTP routes for the Ingredient entity.
 Exposes REST-style endpoints to create, read, and delete ingredients.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
 from sqlalchemy.orm import Session
 
 from app.persistence.db import get_db
@@ -17,11 +17,6 @@ from app.application.services.ingredient_service import (
     get_ingredient_service,
     list_ingredients_service,
     delete_ingredient_service,
-)
-from app.application.exceptions.ingredient_exceptions import (
-    IngredientAlreadyExistsError,
-    IngredientNotFoundError,
-    IngredientInUseError,
 )
 
 router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
@@ -37,11 +32,7 @@ def create_ingredient(
     ingredient_in: IngredientCreate,
     db: Session = Depends(get_db),
 ):
-    try:
-        return create_ingredient_service(db, name=ingredient_in.name)
-    except IngredientAlreadyExistsError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
-
+    return create_ingredient_service(db, name=ingredient_in.name)
 
 # ───────────── LIST ──────────────
 @router.get(
@@ -67,10 +58,7 @@ def get_ingredient(
     ingredient_id: int,
     db: Session = Depends(get_db),
 ):
-    try:
-        return get_ingredient_service(db, ingredient_id)
-    except IngredientNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+    return get_ingredient_service(db, ingredient_id)
 
 
 # ───────────── DELETE ────────────
@@ -83,9 +71,5 @@ def delete_ingredient(
     ingredient_id: int,
     db: Session = Depends(get_db),
 ):
-    try:
-        delete_ingredient_service(db, ingredient_id)
-    except IngredientNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except IngredientInUseError as exc:
-        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    delete_ingredient_service(db, ingredient_id)
+    return
