@@ -10,6 +10,7 @@ COPY pyproject.toml poetry.lock* /app/
 # Install Poetry and configure it to install dependencies in the global environment (global since it is happening in the container)
 RUN pip install poetry \
  && poetry config virtualenvs.create false \
+ && poetry lock \
  && poetry install --no-root --no-interaction --no-ansi
 
 # Copy the entire project into the container
@@ -20,3 +21,5 @@ EXPOSE 8000
 
 # Default command to run the FastAPI app with Uvicorn
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+
+
