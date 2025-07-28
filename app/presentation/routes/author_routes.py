@@ -8,11 +8,16 @@ from typing import List, Union
 
 from fastapi import APIRouter, Depends, HTTPException, status
 
+from app.application.services.auth import get_current_user, get_current_active_admin
 from app.application.services.author_service import AuthorService
 from app.application.services.author_service_provider import get_author_service
 from app.domain.schemas.author import AuthorCreate, AuthorResponse, AuthorUpdate
 
-router = APIRouter(prefix="/authors", tags=["Authors"])
+router = APIRouter(
+    prefix="/authors",
+    tags=["Authors"],
+    dependencies=[Depends(get_current_user)],
+    )
 
 # ─────────────────────────────── CREATE ──────────────────────────────
 @router.post(
@@ -20,6 +25,7 @@ router = APIRouter(prefix="/authors", tags=["Authors"])
     response_model=List[AuthorResponse], 
     status_code=status.HTTP_201_CREATED,
     summary="Create one or many authors",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def create_author(
     author_in: Union[AuthorCreate, List[AuthorCreate]],
@@ -84,6 +90,7 @@ def list_authors(
     "/{author_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an author",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def delete_author(
     author_id: int,
@@ -100,6 +107,7 @@ def delete_author(
     response_model=AuthorResponse,
     status_code=status.HTTP_200_OK,
     summary="Update an author",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def update_author(
     author_id: int,

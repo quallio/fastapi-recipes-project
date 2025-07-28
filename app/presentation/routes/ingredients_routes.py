@@ -6,6 +6,7 @@ Exposes REST-style endpoints to create, read, and delete ingredients.
 
 from fastapi import APIRouter, Depends, status
 
+from app.application.services.auth import get_current_user, get_current_active_admin
 from app.application.services.ingredient_service import IngredientService
 from app.application.services.ingredient_service_provider import get_ingredient_service
 from app.domain.schemas.ingredient import (
@@ -13,7 +14,11 @@ from app.domain.schemas.ingredient import (
     IngredientResponse,
 )
 
-router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
+router = APIRouter(
+    prefix="/ingredients",
+    tags=["Ingredients"],
+    dependencies=[Depends(get_current_user)],
+    )
 
 # ───────────── CREATE ─────────────
 @router.post(
@@ -21,6 +26,7 @@ router = APIRouter(prefix="/ingredients", tags=["Ingredients"])
     response_model=IngredientResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new ingredient",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def create_ingredient(
     ingredient_in: IngredientCreate,
@@ -58,6 +64,7 @@ def get_ingredient(
     "/{ingredient_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete an ingredient (must not be in use)",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def delete_ingredient(
     ingredient_id: int,

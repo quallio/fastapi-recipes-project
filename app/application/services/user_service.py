@@ -19,7 +19,7 @@ class UserService:
         if self.repo.get_by_email(self.db, user_in.email):
             raise ValueError("Email already registered")
         hashed = hash_password(user_in.password)
-        return self.repo.create(self.db, email=user_in.email, hashed_password=hashed)
+        return self.repo.create(self.db, email=user_in.email, hashed_password=hashed, role=user_in.role)
 
     def authenticate(self, email: str, password: str) -> Optional[User]:
         """

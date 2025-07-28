@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.domain.models.user import User
+from app.domain.models.user import User, UserRole
 from app.persistence.repositories.base_repository import BaseRepository
 
 class UserRepository(BaseRepository[User]):
@@ -12,11 +12,11 @@ class UserRepository(BaseRepository[User]):
         """
         return db.query(self.model).filter(self.model.email == email).first()
 
-    def create(self, db: Session, *, email: str, hashed_password: str) -> User:
+    def create(self, db: Session, *, email: str, hashed_password: str, role: UserRole = UserRole.user) -> User:
         """
         Create a new user with the given email and hashed password.
         """
-        user = User(email=email, hashed_password=hashed_password)
+        user = User(email=email, hashed_password=hashed_password, role=role)
         db.add(user)
         db.commit()
         db.refresh(user)

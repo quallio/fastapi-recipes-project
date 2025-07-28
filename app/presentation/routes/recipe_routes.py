@@ -8,6 +8,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, Query, status
 
+from app.application.services.auth import get_current_user, get_current_active_admin
 from app.application.services.recipe_service_provider import get_recipe_service
 from app.application.services.recipe_service import RecipeService
 from app.domain.schemas.recipe import (
@@ -16,7 +17,11 @@ from app.domain.schemas.recipe import (
     RecipeResponse,
 )
 
-router = APIRouter(prefix="/recipes", tags=["Recipes"])
+router = APIRouter(
+    prefix="/recipes",
+    tags=["Recipes"],
+    dependencies=[Depends(get_current_user)],
+    )
 
 # ─────────────────────────────── CREATE ──────────────────────────────
 @router.post(
@@ -24,6 +29,7 @@ router = APIRouter(prefix="/recipes", tags=["Recipes"])
     response_model=RecipeResponse,
     status_code=status.HTTP_201_CREATED,
     summary="Create a new recipe",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def create_recipe(
     recipe_in: RecipeCreate,
@@ -83,6 +89,7 @@ def get_recipe(
     response_model=RecipeResponse,
     status_code=status.HTTP_200_OK,
     summary="Update a recipe (title/description/ingredients)",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def update_recipe(
     recipe_id: int,
@@ -111,6 +118,7 @@ def update_recipe(
     "/{recipe_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete a recipe",
+    dependencies=[Depends(get_current_active_admin)],
 )
 def delete_recipe(
     recipe_id: int,
