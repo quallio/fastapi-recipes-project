@@ -1,3 +1,4 @@
+
 [tool.poetry]
 name = "fastapi-recipes-project"
 version = "0.1.0"
@@ -12,11 +13,19 @@ sqlalchemy = "^2.0"
 psycopg2-binary = "^2.9"
 python-dotenv = "^1.0"
 pydantic = {extras = ["email"], version = "^2.11.7"}
+pydantic-settings = "^2.10.1"
+
+
+# JWT and security dependencies
+python-jose = {extras = ["cryptography"], version = "^3.4"}
+passlib     = {extras = ["bcrypt"],      version = "^1.7"}
+python-multipart = "^0.0.6"
+
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
-pytest = "^8.4.1"
+pytest     = "^8.4.1"
 
 [build-system]
-requires = ["poetry-core"]
+requires    = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

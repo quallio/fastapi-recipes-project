@@ -6,6 +6,7 @@ from app.presentation.routes import system
 from app.presentation.routes import author_routes as author
 from app.presentation.routes import recipe_routes as recipe
 from app.presentation.routes import ingredients_routes as ingredient
+from app.presentation.routes import auth_routes as auth
 
 # Create FastAPI app
 app = FastAPI(title="Recipes API", version="0.1.0")
@@ -31,3 +32,4 @@ app.include_router(system.router)
 app.include_router(author.router)
 app.include_router(recipe.router)
 app.include_router(ingredient.router)
+app.include_router(auth.router)
