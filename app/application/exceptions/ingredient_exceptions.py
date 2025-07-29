@@ -20,3 +20,7 @@ class IngredientNotFoundError(Exception):
 class IngredientInUseError(Exception):
     def __init__(self, ingredient_id: int):
         super().__init__(f"Ingredient with ID {ingredient_id} is used in a recipe and cannot be deleted.")
+
+class InvalidCSVError(Exception):
+    def __init__(self, detail: str = "Only CSV files are supported"):
+        super().__init__(detail)

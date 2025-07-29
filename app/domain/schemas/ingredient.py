@@ -15,3 +15,12 @@ class IngredientResponse(IngredientBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+# ─────────────────────── IMPORT via CV  ─────────────────────────
+
+class IngredientImportItem(BaseModel):
+    name: str
+    status: str
+    id: int | None = None
+
+    model_config = ConfigDict(from_attributes=True)

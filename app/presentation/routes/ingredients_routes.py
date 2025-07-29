@@ -4,7 +4,8 @@ HTTP routes for the Ingredient entity.
 Exposes REST-style endpoints to create, read, and delete ingredients.
 """
 
-from fastapi import APIRouter, Depends, status
+from typing import List
+from fastapi import APIRouter, Depends, UploadFile, File, HTTPException, status
 
 from app.application.services.auth import get_current_user, get_current_active_admin
 from app.application.services.ingredient_service import IngredientService
@@ -12,6 +13,7 @@ from app.application.services.ingredient_service_provider import get_ingredient_
 from app.domain.schemas.ingredient import (
     IngredientCreate,
     IngredientResponse,
+    IngredientImportItem,
 )
 
 router = APIRouter(
@@ -71,3 +73,17 @@ def delete_ingredient(
     service: IngredientService = Depends(get_ingredient_service),
 ):
     return service.delete_ingredient(ingredient_id)
+
+# ───────────── IMPORT CV ────────────
+@router.post(
+    "/import",
+    response_model=List[IngredientImportItem],
+    status_code=status.HTTP_201_CREATED,
+    summary="Bulk import ingredients from CSV (admin only)",
+    dependencies=[Depends(get_current_active_admin)],
+)
+async def import_ingredients_csv(
+    file: UploadFile = File(..., description="CSV file with a `name` column"),
+    service: IngredientService = Depends(get_ingredient_service),
+) -> List[IngredientImportItem]:
+    return await service.bulk_import(file)

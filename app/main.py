@@ -17,6 +17,7 @@ register_exception_handlers(app)
 origins = [
     "http://localhost:5173",     # Vite dev server
     "http://127.0.0.1:5173",     # Alternative localhost
+    "http://localhost:8000",     # Swagger UI / FastAPI docs
 ]
 
 app.add_middleware(
